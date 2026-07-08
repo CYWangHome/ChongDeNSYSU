@@ -5,7 +5,7 @@
 
 // 管理後台密碼。請自行改成一組不容易猜到的文字。
 // admin.html 讀取、刪除、清空資料時會要求輸入同一組 token。
-var ADMIN_TOKEN = '請改成自己的管理密碼';
+var ADMIN_TOKEN = '123';
 
 var HEADERS = [
   '報名時間', '姓名', '性別', '電話', '天職',
@@ -172,9 +172,55 @@ function getSheet_() {
 }
 
 function ensureHeader_(sheet) {
-  var firstRow = sheet.getRange(1, 1, 1, HEADERS.length).getValues()[0];
-  if (firstRow[0] === HEADERS[0]) return;
-  initSheet();
+  var lastColumn = Math.max(sheet.getLastColumn(), HEADERS.length);
+  var headers = sheet.getRange(1, 1, 1, lastColumn).getValues()[0];
+
+  // 空白試算表：初始化
+  if (!headers[0]) {
+    initSheet();
+    return;
+  }
+
+  // 已經是最新版，不需要處理
+  if (headers[10] === '同行家人人數' && headers[11] === '備註') {
+    return;
+  }
+
+  // 舊版（第11欄是備註）：插入新欄位，保留原備註資料
+  if (headers[10] === '備註') {
+    sheet.insertColumnBefore(11);
+
+    sheet.getRange(1, 11).setValue('同行家人人數');
+    sheet.getRange(1, 12).setValue('備註');
+
+    sheet.setColumnWidth(11, 160);
+    sheet.setColumnWidth(12, 200);
+
+    return;
+  }
+
+  // 其他情況：同步標題（不覆蓋資料）
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+
+  // 更新樣式
+  var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
+  headerRange.setFontWeight('bold');
+  headerRange.setBackground('#1a2744');
+  headerRange.setFontColor('#f0d878');
+  sheet.setFrozenRows(1);
+
+  sheet.setColumnWidth(1, 160);
+  sheet.setColumnWidth(2, 80);
+  sheet.setColumnWidth(3, 60);
+  sheet.setColumnWidth(4, 120);
+  sheet.setColumnWidth(5, 100);
+  sheet.setColumnWidth(6, 80);
+  sheet.setColumnWidth(7, 150);
+  sheet.setColumnWidth(8, 200);
+  sheet.setColumnWidth(9, 80);
+  sheet.setColumnWidth(10, 80);
+  sheet.setColumnWidth(11, 160);
+  sheet.setColumnWidth(12, 200);
 }
 
 function json_(payload) {

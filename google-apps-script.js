@@ -10,7 +10,7 @@ var ADMIN_TOKEN = '請改成自己的管理密碼';
 var HEADERS = [
   '報名時間', '姓名', '性別', '電話', '天職',
   '居住地', '接近道場/佛堂', '回來時間',
-  '住宿安排', '高鐵接送', '備註'
+  '住宿安排', '高鐵接送', '同行家人人數', '備註'
 ];
 
 function doPost(e) {
@@ -89,6 +89,7 @@ function register_(data) {
     data.arrivalTime || '',
     data.accommodation || '',
     data.hsrPickup || '',
+    data.familyCompanions || '',
     data.notes || ''
   ]);
 
@@ -115,7 +116,8 @@ function getRegistrations_() {
       arrivalTime: data[i][7] || '',
       accommodation: data[i][8] || '',
       hsrPickup: data[i][9] || '',
-      notes: data[i][10] || ''
+      familyCompanions: data[i][10] || '',
+      notes: data[i][11] || ''
     });
   }
 
@@ -208,5 +210,6 @@ function initSheet() {
   sheet.setColumnWidth(8, 200);
   sheet.setColumnWidth(9, 80);
   sheet.setColumnWidth(10, 80);
-  sheet.setColumnWidth(11, 200);
+  sheet.setColumnWidth(11, 160);
+  sheet.setColumnWidth(12, 200);
 }

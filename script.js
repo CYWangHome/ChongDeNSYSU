@@ -101,7 +101,7 @@ async function handleSubmit(e) {
     data[key] = value;
   });
 
-  const requiredFields = ['name', 'gender', 'phone', 'role', 'location', 'nearbyTemple', 'arrivalTime', 'accommodation', 'hsrPickup'];
+  const requiredFields = ['name', 'gender', 'phone', 'role', 'location', 'nearbyTemple', 'arrivalTime', 'accommodation', 'hsrPickup', 'familyCompanions'];
   const missing = requiredFields.filter(f => !data[f]);
 
   if (missing.length > 0) {

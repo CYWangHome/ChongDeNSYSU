@@ -555,6 +555,7 @@
               <th>回來時間</th>
               <th>住宿</th>
               <th>高鐵接送</th>
+              <th>同行家人</th>
               <th>備註</th>
               <th>操作</th>
             </tr>
@@ -577,6 +578,7 @@
             <td>${escapeHtml(r.arrivalTime) || '—'}</td>
             <td>${escapeHtml(r.accommodation) || '—'}</td>
             <td>${escapeHtml(r.hsrPickup) || '—'}</td>
+            <td>${escapeHtml(r.familyCompanions) || '—'}</td>
             <td>${escapeHtml(r.notes) || '—'}</td>
             <td><button class="delete-btn" onclick="confirmDelete(${r.id})">刪除</button></td>
           </tr>
@@ -663,8 +665,8 @@
         return;
       }
 
-      const headers = ['#', '報名時間', '姓名', '性別', '電話', '天職', '居住地', '接近道場/佛堂', '回來時間', '住宿', '高鐵接送', '備註'];
-      const keys = ['timestamp', 'name', 'gender', 'phone', 'role', 'location', 'nearbyTemple', 'arrivalTime', 'accommodation', 'hsrPickup', 'notes'];
+      const headers = ['#', '報名時間', '姓名', '性別', '電話', '天職', '居住地', '接近道場/佛堂', '回來時間', '住宿', '高鐵接送', '同行家人', '備註'];
+      const keys = ['timestamp', 'name', 'gender', 'phone', 'role', 'location', 'nearbyTemple', 'arrivalTime', 'accommodation', 'hsrPickup', 'familyCompanions', 'notes'];
 
       // BOM for UTF-8
       let csv = '\uFEFF';

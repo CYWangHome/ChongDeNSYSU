@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>報名管理後台 — 慈燈講師壇主夏季精進班</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-light: #f0d878;
+      --gold-dark: #a88b2a;
+      --burgundy: #6b1d3a;
+      --burgundy-deep: #3d0e21;
+      --navy: #0c1225;
+      --navy-light: #1a2744;
+      --cream: #faf5e8;
+      --cream-light: #fdf9f0;
+      --white: #ffffff;
+      --text-primary: #2d1f14;
+      --text-secondary: #6b5d52;
+      --text-light: #a09488;
+      --font-serif: 'Noto Serif TC', serif;
+      --font-sans: 'Noto Sans TC', sans-serif;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--cream);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .admin-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 50%, var(--burgundy-deep) 100%);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .admin-header::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(ellipse at 50% 50%, rgba(212,175,55,0.06) 0%, transparent 60%);
+    }
+
+    .admin-header h1 {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--cream);
+      position: relative;
+      background: linear-gradient(180deg, var(--cream) 0%, var(--gold-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-header p {
+      color: rgba(250,245,232,0.5);
+      font-size: 0.85rem;
+      position: relative;
+    }
+
+    .admin-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    .admin-nav a {
+      padding: 6px 20px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .nav-back {
+      background: rgba(250,245,232,0.1);
+      color: rgba(250,245,232,0.7);
+      border: 1px solid rgba(250,245,232,0.15);
+    }
+    .nav-back:hover {
+      background: rgba(250,245,232,0.2);
+      color: var(--cream);
+    }
+
+    .nav-export {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: var(--navy);
+    }
+    .nav-export:hover {
+      box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+      transform: translateY(-1px);
+    }
+
+    .nav-danger {
+      background: rgba(192, 57, 43, 0.15);
+      color: #e74c3c;
+      border: 1px solid rgba(192, 57, 43, 0.2);
+    }
+    .nav-danger:hover {
+      background: rgba(192, 57, 43, 0.25);
+    }
+
+    /* Stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .stat-card {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(212,175,55,0.1);
+      transition: var(--transition);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    }
+
+    .stat-number {
+      font-family: var(--font-serif);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--burgundy-deep);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      letter-spacing: 0.05em;
+    }
+
+    /* Table */
+    .table-container {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+      padding: 0 1.5rem;
+    }
+
+    .table-wrapper {
+      background: var(--white);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(212,175,55,0.1);
+    }
+
+    .table-scroll {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    }
+
+    th {
+      padding: 14px 16px;
+      text-align: left;
+      color: var(--gold-light);
+      font-weight: 600;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(212,175,55,0.06);
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      transition: var(--transition);
+    }
+
+    tbody tr:hover {
+      background: rgba(212,175,55,0.04);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-male {
+      background: rgba(52, 152, 219, 0.1);
+      color: #2980b9;
+    }
+    .badge-female {
+      background: rgba(231, 76, 60, 0.1);
+      color: #c0392b;
+    }
+
+    .badge-role {
+      background: rgba(107, 29, 58, 0.08);
+      color: var(--burgundy);
+    }
+
+    .delete-btn {
+      background: none;
+      border: 1px solid rgba(231,76,60,0.2);
+      color: #e74c3c;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .delete-btn:hover {
+      background: rgba(231,76,60,0.1);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .empty-text {
+      font-size: 1.1rem;
+      color: var(--text-light);
+      font-family: var(--font-serif);
+    }
+
+    .empty-sub {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+      opacity: 0.6;
+    }
+
+    /* Confirm Dialog */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(12,18,37,0.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .confirm-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .confirm-box {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.9);
+      transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .confirm-overlay.active .confirm-box {
+      transform: scale(1);
+    }
+
+    .confirm-box h3 {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      color: var(--text-primary);
+    }
+
+    .confirm-box p {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .confirm-actions button {
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-sans);
+    }
+
+    .btn-cancel {
+      background: var(--cream);
+      border: 1px solid rgba(0,0,0,0.1);
+      color: var(--text-secondary);
+    }
+
+    .btn-cancel:hover {
+      background: #f0ebe0;
+    }
+
+    .btn-confirm-delete {
+      background: #e74c3c;
+      border: none;
+      color: white;
+    }
+
+    .btn-confirm-delete:hover {
+      background: #c0392b;
+    }
+
+    @media (max-width: 768px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .admin-nav {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <h1>📋 報名管理後台</h1>
+    <p>慈燈講師壇主夏季精進班　115年 8月 1日</p>
+    <nav class="admin-nav">
+      <a href="index.html" class="nav-back">← 返回報名頁</a>
+      <a href="#" class="nav-export" onclick="exportCSV()">📥 匯出 CSV</a>
+      <a href="#" class="nav-danger" onclick="confirmClearAll()">🗑 清除所有資料</a>
+    </nav>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats" id="stats"></div>
+
+  <!-- Table -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <div class="table-scroll" id="tableContent"></div>
+    </div>
+  </div>
+
+  <!-- Confirm Dialog -->
+  <div class="confirm-overlay" id="confirmDialog">
+    <div class="confirm-box">
+      <h3>⚠️ 確認刪除</h3>
+      <p id="confirmMessage">確定要清除所有報名資料嗎？此操作無法復原。</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" onclick="closeConfirm()">取消</button>
+        <button class="btn-confirm-delete" id="confirmBtn" onclick="executePendingAction()">確定刪除</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    let pendingAction = null;
+    let currentRegistrations = [];
+
+    function getBackendUrl() {
+      return (window.CIDENG_CONFIG && window.CIDENG_CONFIG.GOOGLE_SCRIPT_URL || '').trim();
+    }
+
+    function getTokenStorageKey() {
+      return (window.CIDENG_CONFIG && window.CIDENG_CONFIG.ADMIN_TOKEN_STORAGE_KEY) || 'cideng_admin_token';
+    }
+
+    function isBackendReady() {
+      return /^https:\/\/script\.google\.com\/macros\/s\//.test(getBackendUrl());
+    }
+
+    function getAdminToken() {
+      let token = sessionStorage.getItem(getTokenStorageKey()) || '';
+      if (!token) {
+        token = prompt('請輸入管理密碼') || '';
+        if (token) sessionStorage.setItem(getTokenStorageKey(), token);
+      }
+      return token;
+    }
+
+    function jsonpRequest(action, params = {}) {
+      if (!isBackendReady()) {
+        return Promise.reject(new Error('尚未設定 Google Sheets 後端網址，請先完成 config.js 設定。'));
+      }
+
+      const token = getAdminToken();
+      if (!token) return Promise.reject(new Error('需要管理密碼才能讀取後台資料。'));
+
+      return new Promise((resolve, reject) => {
+        const callbackName = `cidengAdminCallback_${Date.now()}_${Math.floor(Math.random() * 100000)}`;
+        const url = new URL(getBackendUrl());
+        url.searchParams.set('action', action);
+        url.searchParams.set('token', token);
+        url.searchParams.set('callback', callbackName);
+        Object.keys(params).forEach((key) => url.searchParams.set(key, params[key]));
+
+        const script = document.createElement('script');
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('連線逾時，請稍後再試。'));
+        }, 15000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        window[callbackName] = (result) => {
+          cleanup();
+          if (result && result.status === 'success') {
+            resolve(result);
+            return;
+          }
+          sessionStorage.removeItem(getTokenStorageKey());
+          reject(new Error((result && result.message) || '操作失敗'));
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('無法連接 Google Sheets 後端。'));
+        };
+
+        script.src = url.toString();
+        document.body.appendChild(script);
+      });
+    }
+
+    function renderStats(registrations) {
+      const total = registrations.length;
+      const male = registrations.filter(r => r.gender === '乾道').length;
+      const female = registrations.filter(r => r.gender === '坤道').length;
+      const needAccom = registrations.filter(r => r.accommodation === '需要').length;
+      const needHSR = registrations.filter(r => r.hsrPickup === '需要').length;
+      const prevDay = registrations.filter(r => r.arrivalTime && r.arrivalTime.includes('前一天')).length;
+
+      document.getElementById('stats').innerHTML = `
+        <div class="stat-card">
+          <div class="stat-number">${total}</div>
+          <div class="stat-label">總報名人數</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${male}</div>
+          <div class="stat-label">乾道</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${female}</div>
+          <div class="stat-label">坤道</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${needAccom}</div>
+          <div class="stat-label">需要住宿</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${needHSR}</div>
+          <div class="stat-label">需要高鐵接送</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">${prevDay}</div>
+          <div class="stat-label">前一天到達</div>
+        </div>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    function renderTable(registrations) {
+      const container = document.getElementById('tableContent');
+
+      if (registrations.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">目前尚無報名資料</div>
+            <div class="empty-sub">報名資料將在有人提交表單後顯示於此</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>報名時間</th>
+              <th>姓名</th>
+              <th>性別</th>
+              <th>電話</th>
+              <th>天職</th>
+              <th>居住地</th>
+              <th>接近道場/佛堂</th>
+              <th>回來時間</th>
+              <th>住宿</th>
+              <th>高鐵接送</th>
+              <th>備註</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      registrations.forEach((r, i) => {
+        const genderClass = r.gender === '乾道' ? 'badge-male' : 'badge-female';
+        html += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(r.timestamp) || '—'}</td>
+            <td><strong>${escapeHtml(r.name) || '—'}</strong></td>
+            <td><span class="badge ${genderClass}">${escapeHtml(r.gender) || '—'}</span></td>
+            <td>${escapeHtml(r.phone) || '—'}</td>
+            <td><span class="badge badge-role">${escapeHtml(r.role) || '—'}</span></td>
+            <td>${escapeHtml(r.location) || '—'}</td>
+            <td>${escapeHtml(r.nearbyTemple) || '—'}</td>
+            <td>${escapeHtml(r.arrivalTime) || '—'}</td>
+            <td>${escapeHtml(r.accommodation) || '—'}</td>
+            <td>${escapeHtml(r.hsrPickup) || '—'}</td>
+            <td>${escapeHtml(r.notes) || '—'}</td>
+            <td><button class="delete-btn" onclick="confirmDelete(${r.id})">刪除</button></td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+      container.innerHTML = html;
+    }
+
+    function showError(message) {
+      renderStats([]);
+      document.getElementById('tableContent').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⚠️</div>
+          <div class="empty-text">${message}</div>
+          <div class="empty-sub">請確認 Google Apps Script 已部署，且 config.js 已貼上正確網址。</div>
+        </div>
+      `;
+    }
+
+    function setLoading() {
+      document.getElementById('tableContent').innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">⌛</div>
+          <div class="empty-text">正在讀取報名資料...</div>
+        </div>
+      `;
+    }
+
+    async function render() {
+      setLoading();
+      try {
+        const result = await jsonpRequest('list');
+        currentRegistrations = result.registrations || [];
+        renderStats(currentRegistrations);
+        renderTable(currentRegistrations);
+      } catch (error) {
+        showError(error.message || '讀取資料失敗');
+      }
+    }
+
+    // Delete single
+    function confirmDelete(id) {
+      pendingAction = async () => {
+        await jsonpRequest('delete', { id });
+        await render();
+      };
+      document.getElementById('confirmMessage').textContent = '確定要刪除此筆報名資料嗎？';
+      document.getElementById('confirmDialog').classList.add('active');
+    }
+
+    // Clear all
+    function confirmClearAll() {
+      pendingAction = async () => {
+        await jsonpRequest('clear');
+        await render();
+      };
+      document.getElementById('confirmMessage').textContent = '確定要清除所有報名資料嗎？此操作無法復原。';
+      document.getElementById('confirmDialog').classList.add('active');
+    }
+
+    async function executePendingAction() {
+      if (pendingAction) {
+        try {
+          await pendingAction();
+          pendingAction = null;
+        } catch (error) {
+          alert(error.message || '操作失敗');
+        }
+      }
+      closeConfirm();
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirmDialog').classList.remove('active');
+    }
+
+    // Export CSV
+    function exportCSV() {
+      const registrations = currentRegistrations;
+      if (registrations.length === 0) {
+        alert('目前沒有報名資料可以匯出。');
+        return;
+      }
+
+      const headers = ['#', '報名時間', '姓名', '性別', '電話', '天職', '居住地', '接近道場/佛堂', '回來時間', '住宿', '高鐵接送', '備註'];
+      const keys = ['timestamp', 'name', 'gender', 'phone', 'role', 'location', 'nearbyTemple', 'arrivalTime', 'accommodation', 'hsrPickup', 'notes'];
+
+      // BOM for UTF-8
+      let csv = '\uFEFF';
+      csv += headers.join(',') + '\n';
+
+      registrations.forEach((r, i) => {
+        const row = [i + 1];
+        keys.forEach(key => {
+          let val = (r[key] || '').toString().replace(/"/g, '""');
+          row.push(`"${val}"`);
+        });
+        csv += row.join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `慈燈夏季精進班報名名單_${new Date().toLocaleDateString('zh-TW').replace(/\//g, '')}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Auto-refresh every 10 seconds
+    setInterval(render, 30000);
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
